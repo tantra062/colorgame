@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+
+	<style type="text/css">
+		body{
+			background: #232323;
+			margin: 0;
+		}
+		.container{
+			margin: 0 20%;
+		}.row{
+			margin: 0 auto;
+		}
+		.square{
+			border-radius: 20px;
+			display: inline-block;
+			background:#232323;
+			padding: 13%;
+			margin:1.6%;
+		}
+		.nav-head h1{
+			color: white;
+			text-align: center;
+			margin: 0;
+			padding:1%;
+			font-size: 2.5vw;
+		}
+		.nav{
+			
+		}
+		.nav .nav-head{
+			background: red;
+		}
+		.fade-out{
+			visibility: hidden;
+			opacity: 0;
+			transition: visibility 0 200s, opacity 0 200s linear;
+		}
+		.nav-body{
+			background:white;
+		}
+		#colorDisplay{
+			font-size: 4.5vw ;
+		}
+		.nav-section{
+			width: 32.87%;
+			display: inline-block;
+			text-align: center;
+		}
+		a{
+			color:black;
+			text-decoration: none;
+		}
+		a.btn{
+			color:green;
+			border:10px;
+			display: inherit;
+			padding: 10px 10px;
+		}
+		a.btn:hover{
+			background:green;
+			color: white;
+		}
+		a.selected{
+			background: green;
+			color:cyan;
+		}
+	</style>
+</head>
+<body>
+	<div class="nav">
+		<div class="nav-head">
+			<h1>THE GREAT<br><span id="colorDisplay">RGB("255, 255, 255")</span><br>GUESSING GAME</h1>
+		</div>
+		<div class="nav-body">
+			<div class="container">
+				<div class="nav-section">
+					<a href="#" id="playAgain" class="btn">NEW COLOR</a>					
+				</div>
+				<div class="nav-section">
+					<span id="message"></span>
+				</div>
+				<div class="nav-section">
+					<a href="#" id="easy" onclick="gameMode(this)" class="btn btnEasy">EASY</a>	
+					<a href="#" id="hard" onclick="gameMode(this)" class="btn selected btnHard">HARD</a>	
+				</div>
+			</div>
+		</div>	
+	</div>
+	<div class="container">
+		<div class="row">
+			<ul id="ulsquare">
+				<li class="square"></li>
+				<li class="square"></li>
+				<li class="square"></li>
+				<li class="square"></li>
+				<li class="square"></li>
+				<li class="square"></li>
+			</ul>
+		</div>
+	</div>
+
+		<script>
+		var colors = [];
+		var squares = document.querySelectorAll(".square");
+		var colorDisplay = document.querySelector("#colorDisplay");
+		var message = document.querySelector("#message");
+		var playAgain = document.querySelector("#playAgain");
+		var btnMode = document.querySelectorAll("#btn-mode");
+		var nav_head = document.querySelector(".nav-head");
+		var easyButton = document.querySelector(".btnEasy");
+		var hardButton = document.querySelector(".btnHard");
+		var difficulty = 5;
+		var win = false;
+		newGame(difficulty);
+		
+
+		playAgain.addEventListener("click",function(){
+			reset();
+			if (win){
+				playAgain.innerHTML = "NEW COLOR";
+			}
+			newGame(difficulty);
+		});
+		function gameMode(elem){
+			switch (elem.id){
+				case 'easy':
+					difficulty = 2;
+					reset();
+					easyButton.classList.add("selected");
+					hardButton.classList.remove("selected");
+					newGame(difficulty);
+					break;
+				case 'hard':
+					difficulty = 5;
+					easyButton.classList.remove("selected");
+					hardButton.classList.add("selected");
+					reset();
+					newGame(difficulty);
+					break;
+			}
+		}
+
+		function newGame(difficulty){
+			colors = [];
+			reset();
+			for (var i = 0; difficulty >= i; i++) {
+				var newRGB = random_rgb();
+				colors.push(newRGB);
+				squares[i].classList.remove("fade-out");
+			}
+			message.innerHTML = "";
+			theGame();
+		}
+
+		function random_rgb() {
+		    var o = Math.round, r = Math.random, s = 255;
+		    return 'rgb(' + o(r()*s) + ', ' + o(r()*s) + ', ' + o(r()*s) + ')';
+		}
+
+
+		function colorPicker(){
+			var x = Math.floor((Math.random() * colors.length) + 0);
+			var pickedColor = colors[x];
+			return colorDisplay.textContent = pickedColor;
+		}
+
+		function theGame(){
+			pickedColor = colorPicker();
+			for(var i = 0; i < squares.length; i++){
+				squares[i].style.background = colors[i];
+				squares[i].addEventListener("click", function(){
+					var clickedColor = this.style.background;
+					if(clickedColor === pickedColor){
+						message.innerHTML = "Correct!";
+						finishGame(pickedColor);
+					}else{
+						message.innerHTML = "WRONG!";
+						this.classList.add("fade-out");
+					}
+				});
+			}
+		}
+		function finishGame(color){
+			for(var i = 0; i < colors.length; i++){
+				squares[i].style.background = color;
+				squares[i].classList.remove("fade-out");
+				playAgain.innerHTML = "PLAY AGAIN?";
+				win = true;
+			}
+			nav_head.style.background = color;
+		}
+		function reset(){
+			for (var i = 0; i < 6; i++) {
+				squares[i].classList.add("fade-out");
+			}
+		}
+	</script>
+</body>
+</html>
